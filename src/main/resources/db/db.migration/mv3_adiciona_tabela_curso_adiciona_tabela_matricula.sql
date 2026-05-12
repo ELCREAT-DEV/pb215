@@ -35,7 +35,6 @@ CREATE TABLE turma (
 
     CONSTRAINT fk_curso FOREIGN KEY (curso_id) REFERENCES curso(id)
 );
-
 CREATE TABLE matricula (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
 
@@ -43,7 +42,8 @@ CREATE TABLE matricula (
 
     aluno_id UUID NOT NULL,
     curso_id UUID NOT NULL,
-    turma_id UUID ,
+    turma_id UUID,
+    formulario_id UUID,
 
     data_matricula TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 
@@ -53,15 +53,26 @@ CREATE TABLE matricula (
     updated_at TIMESTAMP,
     deleted_at TIMESTAMP,
 
-    CONSTRAINT fk_aluno 
-        FOREIGN KEY (aluno_id) 
+    CONSTRAINT fk_aluno
+        FOREIGN KEY (aluno_id)
         REFERENCES aluno(id)
         ON DELETE CASCADE,
 
-    CONSTRAINT fk_turma 
-        FOREIGN KEY (turma_id) 
+    CONSTRAINT fk_curso
+        FOREIGN KEY (curso_id)
+        REFERENCES curso(id)
+        ON DELETE CASCADE,
+
+    CONSTRAINT fk_turma
+        FOREIGN KEY (turma_id)
         REFERENCES turma(id)
         ON DELETE CASCADE,
-    CONSTRAINT unique_matricula 
+
+    CONSTRAINT fk_formulario
+        FOREIGN KEY (formulario_id)
+        REFERENCES formulario_matricula(id)
+        ON DELETE SET NULL,
+
+    CONSTRAINT unique_matricula
         UNIQUE (aluno_id, turma_id)
 );

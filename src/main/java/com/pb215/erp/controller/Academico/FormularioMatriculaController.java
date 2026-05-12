@@ -3,6 +3,7 @@ package com.pb215.erp.controller.Academico;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -45,6 +46,15 @@ public class FormularioMatriculaController {
     @GetMapping("/{id}")
     public FormularioMatriculaModel buscarPorId(@PathVariable java.util.UUID id) {
         return formularioService.buscarPorId(id);
+    }
+
+    @GetMapping("/token/{token}")
+    public ResponseEntity<FormularioMatriculaModel> buscarPorToken(
+            @PathVariable String token
+    ) {
+        return ResponseEntity.ok(
+                formularioService.buscarPorToken(token)
+        );
     }
 
     @PutMapping("/{id}")

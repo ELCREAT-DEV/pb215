@@ -38,7 +38,7 @@ public class AlunoModel{
     private String nome;
 
     @CPF
-    @Column(nullable = false, unique = true, length = 11)
+    @Column(nullable = false, length = 11)
     private String cpf;
 
     @Column(name = "data_nascimento")

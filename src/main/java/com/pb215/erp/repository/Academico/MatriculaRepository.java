@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.Query;
 
 import com.pb215.erp.dto.Academico.MatriculaResumoResponse;
 import com.pb215.erp.model.Academico.CursoModel;
+import com.pb215.erp.model.Academico.FormularioMatriculaModel;
 import com.pb215.erp.model.Academico.MatriculaModel;
 import com.pb215.erp.model.Academico.TurmaModel;
 
@@ -54,5 +55,9 @@ public interface MatriculaRepository extends JpaRepository<MatriculaModel, UUID>
             ORDER BY m.created_at DESC
             """, nativeQuery = true)
     List<MatriculaResumoResponse> listarResumoParaFront();   
+        long countByFormularioAndStatus(
+        FormularioMatriculaModel formulario,
+        String status
+);
     
 }
