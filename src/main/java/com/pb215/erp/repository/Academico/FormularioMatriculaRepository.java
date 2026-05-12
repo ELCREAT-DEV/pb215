@@ -11,7 +11,9 @@ import com.pb215.erp.model.Academico.FormularioMatriculaModel;
 
 public interface FormularioMatriculaRepository extends JpaRepository<FormularioMatriculaModel, UUID> {
 
-    Optional<FormularioMatriculaModel> findByToken(String token);
+    Optional<FormularioMatriculaModel> findByToken(
+        String token
+    );
 
     boolean existsByCursoAndAtivoTrue(CursoModel curso);
 

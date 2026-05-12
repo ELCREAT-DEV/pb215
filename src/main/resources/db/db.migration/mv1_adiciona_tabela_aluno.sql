@@ -5,7 +5,7 @@ CREATE TABLE aluno (
     imagem_url VARCHAR(255),
 
     nome VARCHAR(100) NOT NULL,
-    cpf VARCHAR(11) NOT NULL UNIQUE,
+    cpf VARCHAR(11) NOT NULL,
     rg VARCHAR(20),
 
     data_nascimento DATE,

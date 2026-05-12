@@ -58,4 +58,8 @@ public class MatriculaModel {
     @Column(name = "deleted_at")
     private LocalDateTime deletedAt;
 
+    @ManyToOne
+    @JoinColumn(name = "formulario_id")
+    private FormularioMatriculaModel formulario;
+
 }
