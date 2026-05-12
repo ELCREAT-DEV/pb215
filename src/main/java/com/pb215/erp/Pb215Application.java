@@ -9,13 +9,11 @@ package com.pb215.erp;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.annotation.Profile;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
 
 @SpringBootApplication
 @EnableJpaAuditing
-@Profile("dev")
 
 public class Pb215Application {
 
