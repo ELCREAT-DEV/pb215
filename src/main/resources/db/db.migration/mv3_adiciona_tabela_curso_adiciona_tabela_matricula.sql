@@ -4,6 +4,7 @@ CREATE TABLE curso (
     nome VARCHAR(100) NOT NULL,
     descricao VARCHAR(255),
     codigo_curso VARCHAR(5) NOT NULL UNIQUE,
+    eclesiastico BOOLEAN NOT NULL DEFAULT FALSE,
     
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP,
@@ -41,7 +42,8 @@ CREATE TABLE matricula (
     codigo_matricula VARCHAR(25) NOT NULL UNIQUE,
 
     aluno_id UUID NOT NULL,
-    turma_id UUID NOT NULL,
+    curso_id UUID NOT NULL,
+    turma_id UUID ,
 
     data_matricula TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 

@@ -1,5 +1,7 @@
 package com.pb215.erp.controller.Academico;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,22 +26,22 @@ public class CursoController {
     @Autowired
     private CursoService cursoService;
 
-    @PostMapping("/create")
+    @PostMapping
     public CursoModel criar(@RequestBody CursoModel curso) {
         return cursoService.criarCurso(curso);
     }
 
     @GetMapping("/list")
-    public Iterable<CursoModel> listar() {
-        return cursoRepository.findAll();
+    public List<CursoModel> listar() {
+        return cursoService.listarCursos();
     }
-    @PutMapping("/update")
-    public CursoModel atualizar(CursoModel curso) {
+    @PutMapping("/{id}")
+    public CursoModel atualizar(@RequestBody CursoModel curso) {
         return cursoRepository.save(curso);
     }
 
-    @DeleteMapping("/delete")
-    public void deletar(CursoModel curso) {
+    @DeleteMapping("/{id}")
+    public void deletar(@RequestBody CursoModel curso) {
         cursoRepository.delete(curso);
     }
 }

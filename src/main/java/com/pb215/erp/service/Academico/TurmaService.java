@@ -3,6 +3,7 @@ package com.pb215.erp.service.Academico;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import com.pb215.erp.model.Academico.CursoModel;
@@ -27,29 +28,46 @@ public class TurmaService {
 
         CursoModel curso = cursoRepository.findById(turma.getCurso().getId())
                 .orElseThrow(() -> new RuntimeException("Curso não encontrado"));
+
         turma.setCurso(curso);
 
-        turma.setCodigoTurma(gerarCodigoTurma(curso));
+        int tentativas = 0;
 
-        return turmaRepository.save(turma);
+        while (tentativas < 5) {
+            try {
+                String codigo = gerarCodigoTurma(curso);
+                turma.setCodigoTurma(codigo);
+
+                return turmaRepository.save(turma);
+
+            } catch (DataIntegrityViolationException e) {
+                tentativas++;
+            }
+        }
+
+        throw new RuntimeException("Erro ao gerar código único de turma");
     }
 
     private String gerarCodigoTurma(CursoModel curso) {
 
-        // pega sigla do curso (ex: ADS)
         String sigla = curso.getCodigoCurso();
-
-        // pega ano do curso (createdAt)
         String ano = String.valueOf(curso.getCreatedAt().getYear());
 
-        String prefixo = sigla + ano ;
+        String prefixo = "TUR" + sigla + ano;
 
-        // busca quantas turmas já existem com esse padrão
-        int count = turmaRepository.countByCodigoTurmaStartingWith(prefixo);
+        TurmaModel ultimaTurma = turmaRepository
+        .findTopByCodigoTurmaStartingWithOrderByCodigoTurmaDesc(prefixo);
 
-        String sequencial = String.format("%04d", count + 1);
+        int proximoNumero = 1;
 
-        return "TUR" + prefixo + sequencial;
+        if (ultimaTurma != null) {
+            String ultimoCodigo = ultimaTurma.getCodigoTurma();
+            String numeroStr = ultimoCodigo.substring(prefixo.length());
+            proximoNumero = Integer.parseInt(numeroStr) + 1;
+        }
+        String sequencial = String.format("%04d", proximoNumero);
+
+        return prefixo + sequencial;
     }
         public TurmaModel atualizarTurma(UUID id, TurmaModel turmaReq) {
 
@@ -71,11 +89,7 @@ public class TurmaService {
         if (turmaReq.getStatus() != null) {
             turma.setStatus(turmaReq.getStatus());
         }
-
-        // campos protegidos (importante manter assim)
-        // codigoTurma NÃO atualiza
-        // curso NÃO atualiza aqui
-
+        
         return turmaRepository.save(turma);
     }
 }

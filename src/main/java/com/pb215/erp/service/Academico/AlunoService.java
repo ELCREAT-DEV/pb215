@@ -9,9 +9,11 @@ import org.springframework.stereotype.Service;
 
 import com.pb215.erp.dto.Academico.AlunoRequest;
 import com.pb215.erp.model.Academico.AlunoContatoModel;
+import com.pb215.erp.model.Academico.AlunoEclesiasticaModel;
 import com.pb215.erp.model.Academico.AlunoEnderecoModel;
 import com.pb215.erp.model.Academico.AlunoModel;
 import com.pb215.erp.repository.Academico.AlunoContatoRepository;
+import com.pb215.erp.repository.Academico.AlunoEclesiasticaRepository;
 import com.pb215.erp.repository.Academico.AlunoEnderecoRepository;
 import com.pb215.erp.repository.Academico.AlunoRepository;
 import jakarta.transaction.Transactional;
@@ -27,6 +29,9 @@ public class AlunoService {
 
     @Autowired
     private AlunoEnderecoRepository enderecoRepository;
+
+    @Autowired
+    private AlunoEclesiasticaRepository eclesiasticaRepository;
 
     @Autowired
     private MatriculaService matriculaService;
@@ -62,10 +67,6 @@ public class AlunoService {
         if (request.getAluno().getCpf() == null || request.getAluno().getCpf().isEmpty()) {
             throw new RuntimeException("CPF é obrigatório");
         }
-        if (!request.getAluno().getImagemUrl().contains("cloudinary.com")) {
-              throw new RuntimeException("URL de imagem inválida contate o suporte para mais informações");
-        }
-
         if (request.getContatos() == null || request.getContatos().isEmpty()) {
             throw new RuntimeException("É necessário preencher o contato do aluno");
         }
@@ -86,12 +87,17 @@ public class AlunoService {
             enderecoRepository.save(e);
         });
 
-        if (request.getTurmaId() != null) {
-        matriculaService.matricular(alunoSalvo.getId(), request.getTurmaId());
-    }
-
+        if (request.getEclesiasticas() != null && !request.getEclesiasticas().isEmpty()) {
+            request.getEclesiasticas().forEach(e -> {
+                e.setAluno(alunoSalvo);
+                eclesiasticaRepository.save(e);
+            });
+        }
+        
         return alunoSalvo;
     }
+
+    
     public List<AlunoModel> listarAlunos() {
         return alunoRepository.findByDeletedAtIsNull();
     }
@@ -124,7 +130,7 @@ public class AlunoService {
 
         return alunoRepository.save(aluno);
     }
-    //Soft delete nao 
+    //Soft delete do aluno e dados relacionados
     @Transactional
     public void deletarAluno(UUID id) {
         AlunoModel aluno = alunoRepository.findById(id)
@@ -144,5 +150,10 @@ public class AlunoService {
         List<AlunoEnderecoModel> enderecos = enderecoRepository.findByAlunoId(id);
         enderecos.forEach(e -> e.setDeletedAt(now));
         enderecoRepository.saveAll(enderecos);
+
+        // deletar dados eclesiásticos
+        List<AlunoEclesiasticaModel> eclesiasticas = eclesiasticaRepository.findByAlunoId(id);
+        eclesiasticas.forEach(e -> e.setDeletedAt(now));
+        eclesiasticaRepository.saveAll(eclesiasticas);
     }
 }

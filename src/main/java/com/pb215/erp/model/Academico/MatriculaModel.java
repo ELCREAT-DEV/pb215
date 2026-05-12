@@ -34,7 +34,11 @@ public class MatriculaModel {
     private AlunoModel aluno;
 
     @ManyToOne
-    @JoinColumn(name = "turma_id", nullable = false)
+    @JoinColumn(name = "curso_id", nullable = false)
+    private CursoModel curso;
+
+    @ManyToOne
+    @JoinColumn(name = "turma_id", nullable = true)
     private TurmaModel turma;
 
     @Column(name = "status")
@@ -49,4 +53,9 @@ public class MatriculaModel {
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
+
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @Column(name = "deleted_at")
+    private LocalDateTime deletedAt;
+
 }

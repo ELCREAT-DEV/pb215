@@ -16,5 +16,6 @@ public interface TurmaRepository extends JpaRepository<TurmaModel, UUID> {
 
     boolean existsByCodigoTurma(String codigoTurma);
 
-    int countByCodigoTurmaStartingWith(String prefixo);
+    TurmaModel  findTopByCodigoTurmaStartingWithOrderByCodigoTurmaDesc(String prefixo);
+
 }
