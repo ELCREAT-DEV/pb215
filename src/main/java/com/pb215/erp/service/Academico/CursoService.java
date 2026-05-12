@@ -1,6 +1,7 @@
 package com.pb215.erp.service.Academico;
 
 import java.text.Normalizer;
+import java.util.List;
 import java.util.regex.Pattern;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,5 +27,8 @@ public class CursoService {
     public CursoModel criarCurso(CursoModel curso) {
     curso.setCodigoCurso(gerarCodigoCurso(curso.getNome()));
     return cursoRepository.save(curso);
-}
+    }
+    public List<CursoModel> listarCursos() {
+            return cursoRepository.findAll();
+    }
 }

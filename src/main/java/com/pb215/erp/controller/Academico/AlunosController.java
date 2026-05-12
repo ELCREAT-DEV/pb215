@@ -22,12 +22,12 @@ public class AlunosController {
     @Autowired
     private AlunoMatriculaFacade facade;
 
-    @PostMapping("/create")
+    @PostMapping
     public AlunoModel criar(@RequestBody AlunoRequest request) {
         return facade.criarAlunoComMatricula(request);
     }
 
-    @GetMapping("list")
+    @GetMapping
     public List<AlunoModel> listar() {
         return service.listarAlunos();
     }
@@ -37,12 +37,12 @@ public class AlunosController {
         return service.getAlunoById(id);
     }
 
-    @PutMapping("update/{id}")
+    @PutMapping("{id}")
     public AlunoModel atualizar(@PathVariable UUID id, @RequestBody AlunoRequest request) {
         return service.atualizarAluno(id, request);
     }
 
-    @DeleteMapping("delete/{id}")
+    @DeleteMapping("/{id}")
     public void deletar(@PathVariable UUID id) {
         service.deletarAluno(id);
     }

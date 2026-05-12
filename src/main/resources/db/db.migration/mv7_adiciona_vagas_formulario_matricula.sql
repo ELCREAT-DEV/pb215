@@ -1,0 +1,3 @@
+ALTER TABLE formulario_matricula
+    ADD COLUMN vagas INTEGER NOT NULL DEFAULT 0,
+    ADD COLUMN vagas_contagem INTEGER NOT NULL DEFAULT 0;

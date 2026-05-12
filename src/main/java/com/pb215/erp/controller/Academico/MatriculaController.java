@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 
 
 import com.pb215.erp.dto.Academico.MatriculaRequest;
+import com.pb215.erp.dto.Academico.MatriculaResumoResponse;
 import com.pb215.erp.model.Academico.MatriculaModel;
 import com.pb215.erp.service.Academico.MatriculaService;
 
@@ -21,14 +22,20 @@ public class MatriculaController {
     @PostMapping("/matricular")
     public MatriculaModel matricular(
             @RequestParam UUID alunoId,
-            @RequestParam UUID turmaId) {
+            @RequestParam UUID turmaId,
+            @RequestParam UUID cursoId) {
 
-        return matriculaService.matricular(alunoId, turmaId);
+        return matriculaService.matricular(alunoId, turmaId, cursoId);
     }
 
     @GetMapping("/list")
     public List <MatriculaModel> listar() {
         return matriculaService.listarMatriculas();
+    }
+
+    @GetMapping("/list/front")
+    public List<MatriculaResumoResponse> listarResumoParaFront() {
+        return matriculaService.listarResumoParaFront();
     }
 
     @GetMapping("/{id}")

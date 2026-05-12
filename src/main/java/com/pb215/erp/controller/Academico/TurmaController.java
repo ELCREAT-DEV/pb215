@@ -27,7 +27,7 @@ public class TurmaController {
     @Autowired
     private TurmaService turmaService;
 
-    @PostMapping("/create")
+    @PostMapping
     public TurmaModel criar(@RequestBody TurmaModel turma) {
         return turmaService.criarTurma(turma);
     }
@@ -36,12 +36,18 @@ public class TurmaController {
     public Iterable<TurmaModel> listar() {
         return turmaRepository.findAll();
     }
-    @PutMapping("update/{id}")
+
+    @GetMapping("/{id}")
+    public TurmaModel buscarPorId(@PathVariable UUID id) {
+        return turmaRepository.findById(id).orElseThrow();
+    }
+    
+    @PutMapping("/{id}")
     public TurmaModel atualizar(@PathVariable UUID id, @RequestBody TurmaModel turmaReq) {
         return turmaService.atualizarTurma(id, turmaReq);
     }
 
-    @DeleteMapping("/delete/{id}")
+    @DeleteMapping("/{id}")
     public void deletar(@PathVariable UUID id) {
         turmaRepository.deleteById(id);
     }

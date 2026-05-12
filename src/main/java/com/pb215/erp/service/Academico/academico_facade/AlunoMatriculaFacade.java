@@ -21,8 +21,8 @@ public class AlunoMatriculaFacade {
 
         AlunoModel aluno = alunoService.criarAluno(request);
 
-        if (request.getTurmaId() != null) {
-            matriculaService.matricular(aluno.getId(), request.getTurmaId());
+        if (request.getCursoId() != null) {
+            matriculaService.matricular(aluno.getId(), request.getTurmaId(), request.getCursoId());
         }
 
         return aluno;
