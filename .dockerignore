@@ -1,0 +1,6 @@
+target/
+.git/
+.gitignore
+*.md
+**/*.Zone.Identifier
+.mvn/wrapper/maven-wrapper.jar
