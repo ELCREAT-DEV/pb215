@@ -33,7 +33,7 @@ public class MatriculaController {
         return matriculaService.listarMatriculas();
     }
 
-    @GetMapping("/list/front")
+    @GetMapping("/list/resume")
     public List<MatriculaResumoResponse> listarResumoParaFront() {
         return matriculaService.listarResumoParaFront();
     }

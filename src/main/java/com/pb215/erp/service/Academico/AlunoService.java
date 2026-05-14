@@ -46,10 +46,6 @@ public class AlunoService {
             throw new RuntimeException("Aluno sem CPF");
         }
 
-        if (aluno.getDataNascimento() == null) {
-            throw new RuntimeException("Aluno sem data de nascimento");
-        }
-
         List<AlunoContatoModel> contatos = contatoRepository.findByAlunoId(aluno.getId());
         if (contatos == null || contatos.isEmpty()) {
             throw new RuntimeException("Aluno sem contato");
