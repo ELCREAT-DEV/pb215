@@ -1,0 +1,36 @@
+name: Delete merged branches
+
+on:
+  pull_request:
+    types:
+      - closed
+
+permissions:
+  contents: write
+
+env:
+  # ── Ajuste aqui as branches que NÃO devem ser deletadas ──
+  PROTECTED_BRANCHES: "main development"
+
+jobs:
+  delete-branch:
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Delete branch if not protected
+        env:
+          GH_TOKEN: ${{ github.token }}
+          BRANCH: ${{ github.event.pull_request.head.ref }}
+        run: |
+          for PROTECTED in $PROTECTED_BRANCHES; do
+            if [[ "$BRANCH" == "$PROTECTED" ]]; then
+              echo "⏭️ Branch '$BRANCH' é protegida — não será deletada."
+              exit 0
+            fi
+          done
+
+          echo "🗑️ Deletando branch: $BRANCH"
+          gh api -X DELETE "repos/${{ github.repository }}/git/refs/heads/$BRANCH" \
+            && echo "✅ Branch '$BRANCH' deletada com sucesso." \
+            || echo "⚠️ Falha ao deletar '$BRANCH' (pode já ter sido removida)."
