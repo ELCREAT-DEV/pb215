@@ -3,6 +3,7 @@ package com.pb215.erp.controller.Academico;
 import java.util.List;
 import java.util.UUID;
 
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -44,7 +45,7 @@ public class MatriculaController {
     }
 
     @PutMapping("update/{id}")
-    public MatriculaModel atualizar(@PathVariable UUID id, @RequestBody MatriculaRequest request) {
+    public MatriculaModel atualizar(@PathVariable UUID id, @Valid @RequestBody MatriculaRequest request) {
         return matriculaService.atualizarMatricula(id, request);
     }
 

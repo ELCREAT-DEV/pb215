@@ -2,6 +2,7 @@ package com.pb215.erp.controller.Academico;
 
 import java.util.List;
 
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -27,7 +28,7 @@ public class CursoController {
     private CursoService cursoService;
 
     @PostMapping
-    public CursoModel criar(@RequestBody CursoModel curso) {
+    public CursoModel criar(@Valid @RequestBody CursoModel curso) {
         return cursoService.criarCurso(curso);
     }
 

@@ -6,6 +6,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
+import com.pb215.erp.exception.BusinessException;
+import com.pb215.erp.exception.ResourceNotFoundException;
+import com.pb215.erp.exception.ValidationException;
 import com.pb215.erp.model.Academico.CursoModel;
 import com.pb215.erp.model.Academico.TurmaModel;
 import com.pb215.erp.repository.Academico.CursoRepository;
@@ -23,11 +26,11 @@ public class TurmaService {
     public TurmaModel criarTurma(TurmaModel turma) {
 
         if (turma.getCurso() == null || turma.getCurso().getId() == null) {
-            throw new RuntimeException("Curso é obrigatório");
+            throw new ValidationException("Curso é obrigatório");
         }
 
         CursoModel curso = cursoRepository.findById(turma.getCurso().getId())
-                .orElseThrow(() -> new RuntimeException("Curso não encontrado"));
+                .orElseThrow(() -> new ResourceNotFoundException("Curso não encontrado"));
 
         turma.setCurso(curso);
 
@@ -45,7 +48,7 @@ public class TurmaService {
             }
         }
 
-        throw new RuntimeException("Erro ao gerar código único de turma");
+        throw new BusinessException("Erro ao gerar código único de turma");
     }
 
     private String gerarCodigoTurma(CursoModel curso) {
@@ -72,7 +75,7 @@ public class TurmaService {
         public TurmaModel atualizarTurma(UUID id, TurmaModel turmaReq) {
 
         TurmaModel turma = turmaRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Turma não encontrada"));
+                .orElseThrow(() -> new ResourceNotFoundException("Turma não encontrada"));
 
         if (turmaReq.getNome() != null) {
             turma.setNome(turmaReq.getNome());

@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.pb215.erp.dto.Academico.AlunoRequest;
+import com.pb215.erp.exception.ResourceNotFoundException;
+import com.pb215.erp.exception.ValidationException;
 import com.pb215.erp.model.Academico.AlunoContatoModel;
 import com.pb215.erp.model.Academico.AlunoEclesiasticaModel;
 import com.pb215.erp.model.Academico.AlunoEnderecoModel;
@@ -39,36 +41,36 @@ public class AlunoService {
     public void validarAlunoCompleto(AlunoModel aluno) {
 
         if (aluno.getNome() == null || aluno.getNome().isBlank()) {
-            throw new RuntimeException("Aluno sem nome");
+            throw new ValidationException("Aluno sem nome");
         }
 
         if (aluno.getCpf() == null || aluno.getCpf().isBlank()) {
-            throw new RuntimeException("Aluno sem CPF");
+            throw new ValidationException("Aluno sem CPF");
         }
 
         List<AlunoContatoModel> contatos = contatoRepository.findByAlunoId(aluno.getId());
         if (contatos == null || contatos.isEmpty()) {
-            throw new RuntimeException("Aluno sem contato");
+            throw new ValidationException("Aluno sem contato");
         }
 
         List<AlunoEnderecoModel> enderecos = enderecoRepository.findByAlunoId(aluno.getId());
         if (enderecos == null || enderecos.isEmpty()) {
-            throw new RuntimeException("Aluno sem endereço");
+            throw new ValidationException("Aluno sem endereço");
         }
     }
 
     @Transactional
     public AlunoModel criarAluno(AlunoRequest request) {
 
-        if (request.getAluno().getCpf() == null || request.getAluno().getCpf().isEmpty()) {
-            throw new RuntimeException("CPF é obrigatório");
+        if (request.getAluno().getCpf() == null || request.getAluno().getCpf().isBlank()) {
+            throw new ValidationException("CPF é obrigatório");
         }
         if (request.getContatos() == null || request.getContatos().isEmpty()) {
-            throw new RuntimeException("É necessário preencher o contato do aluno");
+            throw new ValidationException("É necessário preencher o contato do aluno");
         }
 
         if (request.getEnderecos() == null || request.getEnderecos().isEmpty()) {
-            throw new RuntimeException("É necessário preencher o endereço do aluno");
+            throw new ValidationException("É necessário preencher o endereço do aluno");
         }
 
         AlunoModel alunoSalvo = alunoRepository.save(request.getAluno());
@@ -99,12 +101,12 @@ public class AlunoService {
     }
     public AlunoModel getAlunoById(UUID id) {
         return alunoRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Aluno não encontrado com id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Aluno não encontrado com id: " + id));
     }
     public AlunoModel atualizarAluno(UUID id, AlunoRequest request) {
 
         AlunoModel aluno = alunoRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Aluno não encontrado com id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Aluno não encontrado com id: " + id));
 
         AlunoModel req = request.getAluno();
 
@@ -130,7 +132,7 @@ public class AlunoService {
     @Transactional
     public void deletarAluno(UUID id) {
         AlunoModel aluno = alunoRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Aluno não encontrado com id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Aluno não encontrado com id: " + id));
 
         LocalDateTime now = LocalDateTime.now();
 

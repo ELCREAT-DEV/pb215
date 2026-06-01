@@ -7,11 +7,22 @@ import com.pb215.erp.model.Academico.AlunoContatoModel;
 import com.pb215.erp.model.Academico.AlunoEclesiasticaModel;
 import com.pb215.erp.model.Academico.AlunoEnderecoModel;
 import com.pb215.erp.model.Academico.AlunoModel;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 
 
 public class AlunoRequest {
+    @NotNull(message = "Dados do aluno são obrigatórios")
+    @Valid
     private AlunoModel aluno;
+
+    @NotEmpty(message = "É necessário preencher o contato do aluno")
+    @Valid
     private List<AlunoContatoModel> contatos;
+
+    @NotEmpty(message = "É necessário preencher o endereço do aluno")
+    @Valid
     private List<AlunoEnderecoModel> enderecos;
     private List<AlunoEclesiasticaModel> eclesiasticas;
     private UUID turmaId;

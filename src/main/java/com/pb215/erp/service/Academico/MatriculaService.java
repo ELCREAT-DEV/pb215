@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.pb215.erp.dto.Academico.MatriculaRequest;
+import com.pb215.erp.exception.BusinessException;
+import com.pb215.erp.exception.ResourceNotFoundException;
 import com.pb215.erp.dto.Academico.MatriculaResumoResponse;
 import com.pb215.erp.model.Academico.AlunoModel;
 import com.pb215.erp.model.Academico.CursoModel;
@@ -41,29 +43,29 @@ public class MatriculaService {
 public MatriculaModel matricular(UUID alunoId, UUID turmaId, UUID cursoId) {
 
     AlunoModel aluno = alunoRepository.findById(alunoId)
-            .orElseThrow(() -> new RuntimeException("Aluno não encontrado"));
+            .orElseThrow(() -> new ResourceNotFoundException("Aluno não encontrado"));
 
     CursoModel curso = cursoRepository.findById(cursoId)
-            .orElseThrow(() -> new RuntimeException("Curso não encontrado"));
+            .orElseThrow(() -> new ResourceNotFoundException("Curso não encontrado"));
 
     TurmaModel turma = null;
 
     if (turmaId != null) {
         turma = turmaRepository.findById(turmaId)
-                .orElseThrow(() -> new RuntimeException("Turma não encontrada"));
+                .orElseThrow(() -> new ResourceNotFoundException("Turma não encontrada"));
 
         if (curso.getId() == null || turma.getCurso() == null || !turma.getCurso().getId().equals(curso.getId())) {
-            throw new RuntimeException("Turma não pertence ao curso informado");
+            throw new BusinessException("Turma não pertence ao curso informado");
         }
 
         if (Boolean.TRUE.equals(turma.getTurmaFechada())) {
-            throw new RuntimeException("Turma está fechada");
+            throw new BusinessException("Turma está fechada");
         }
 
         long ocupacao = matriculaRepository.countByTurma(turma);
 
         if (ocupacao >= turma.getCapacidade()) {
-            throw new RuntimeException("Turma sem vagas");
+            throw new BusinessException("Turma sem vagas");
         }
     }
 
@@ -108,7 +110,7 @@ public MatriculaModel matricular(UUID alunoId, UUID turmaId, UUID cursoId) {
 
     public MatriculaModel atualizarMatricula(UUID id, MatriculaRequest request) {
         MatriculaModel matricula = matriculaRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Matrícula não encontrada"));
+                .orElseThrow(() -> new ResourceNotFoundException("Matrícula não encontrada"));
 
         if (request.getStatus() != null) {
             if (!STATUS_ATIVO.equals(matricula.getStatus()) && STATUS_ATIVO.equals(request.getStatus())) {
@@ -125,13 +127,13 @@ public MatriculaModel matricular(UUID alunoId, UUID turmaId, UUID cursoId) {
 
     public MatriculaModel getMatriculaById(UUID id) {
         return matriculaRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Matrícula não encontrada"));
+                .orElseThrow(() -> new ResourceNotFoundException("Matrícula não encontrada"));
     }
 
 
     public void deletarMatricula(UUID id) {
         MatriculaModel matricula = matriculaRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Matrícula não encontrada"));
+                .orElseThrow(() -> new ResourceNotFoundException("Matrícula não encontrada"));
         CursoModel curso = matricula.getCurso();
 
         matriculaRepository.deleteById(id);
@@ -141,15 +143,15 @@ public MatriculaModel matricular(UUID alunoId, UUID turmaId, UUID cursoId) {
     public MatriculaModel alocarEmTurma(UUID matriculaId, UUID turmaId) {
 
     MatriculaModel matricula = matriculaRepository.findById(matriculaId)
-            .orElseThrow(() -> new RuntimeException("Matrícula não encontrada"));
+            .orElseThrow(() -> new ResourceNotFoundException("Matrícula não encontrada"));
 
     TurmaModel turma = turmaRepository.findById(turmaId)
-            .orElseThrow(() -> new RuntimeException("Turma não encontrada"));
+            .orElseThrow(() -> new ResourceNotFoundException("Turma não encontrada"));
 
     long ocupacao = matriculaRepository.countByTurma(turma);
 
     if (ocupacao >= turma.getCapacidade()) {
-        throw new RuntimeException("Turma sem vagas");
+        throw new BusinessException("Turma sem vagas");
     }
 
     matricula.setTurma(turma);
@@ -170,7 +172,7 @@ private void validarVagasFormulario(MatriculaModel matricula) {
             .filter(formulario -> matriculasAtivas >= formulario.getVagas())
             .findFirst()
             .ifPresent(formulario -> {
-                throw new RuntimeException("Vagas do formulário atingidas");
+                throw new BusinessException("Vagas do formulário atingidas");
             });
 }
 
