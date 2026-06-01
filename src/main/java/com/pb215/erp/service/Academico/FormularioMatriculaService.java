@@ -8,6 +8,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.pb215.erp.dto.Academico.FormularioMatriculaRequest;
+import com.pb215.erp.exception.BusinessException;
+import com.pb215.erp.exception.ConflictException;
+import com.pb215.erp.exception.ResourceNotFoundException;
+import com.pb215.erp.exception.ValidationException;
 import com.pb215.erp.model.Academico.CursoModel;
 import com.pb215.erp.model.Academico.FormularioMatriculaModel;
 import com.pb215.erp.model.Academico.MatriculaModel;
@@ -39,25 +43,21 @@ public class FormularioMatriculaService {
     ) {
 
         CursoModel curso = cursoRepository.findById(cursoId)
-                .orElseThrow(() ->
-                        new RuntimeException("Curso não encontrado"));
+                .orElseThrow(() -> new ResourceNotFoundException("Curso não encontrado"));
 
         if (!Boolean.TRUE.equals(curso.getEclesiastico())) {
-            throw new RuntimeException(
-                    "Formulário só pode ser gerado para curso eclesiástico"
-            );
+            throw new BusinessException("Formulário só pode ser gerado para curso eclesiástico");
         }
 
         if (formularioRepository.existsByCursoAndAtivoTrue(curso)) {
-            throw new RuntimeException(
-                    "Já existe um formulário ativo para este curso"
-            );
+            throw new ConflictException("Já existe um formulário ativo para este curso");
         }
 
-        if (vagas == null || vagas <= 0) {
-            throw new RuntimeException(
-                    "É necessário informar a quantidade de vagas do formulário"
-            );
+        if (vagas == null) {
+            throw new ValidationException("É necessário informar a quantidade de vagas do formulário");
+        }
+        if (vagas <= 0) {
+            throw new ValidationException("A quantidade de vagas do formulário deve ser maior que zero");
         }
 
         FormularioMatriculaModel formulario =
@@ -82,54 +82,34 @@ public class FormularioMatriculaService {
 
         FormularioMatriculaModel formulario =
                 formularioRepository.findByToken(token)
-                .orElseThrow(() ->
-                        new RuntimeException(
-                                "Formulário não encontrado"
-                        ));
+                .orElseThrow(() -> new ResourceNotFoundException("Formulário não encontrado"));
 
         if (Boolean.FALSE.equals(formulario.getAtivo())) {
-            throw new RuntimeException("Formulário inativo");
+            throw new BusinessException("Formulário inativo");
         }
 
-        if (
-                formulario.getExpiraEm() != null &&
-                LocalDateTime.now().isAfter(formulario.getExpiraEm())
-        ) {
-
+        if (formulario.getExpiraEm() != null && LocalDateTime.now().isAfter(formulario.getExpiraEm())) {
             formulario.setAtivo(Boolean.FALSE);
             formularioRepository.save(formulario);
-
-            throw new RuntimeException("Formulário expirado");
+            throw new BusinessException("Formulário expirado");
         }
 
         CursoModel curso = formulario.getCurso();
 
         if (curso == null) {
-            throw new RuntimeException(
-                    "Formulário não está vinculado a nenhum curso"
-            );
+            throw new BusinessException("Formulário não está vinculado a nenhum curso");
         }
 
         atualizarVagasContagem(formulario);
 
-        if (
-                formulario.getVagas() == null ||
-                formulario.getVagas() <= 0
-        ) {
-
-            throw new RuntimeException(
-                    "Formulário sem vagas configuradas"
-            );
+        if (formulario.getVagas() == null || formulario.getVagas() <= 0) {
+            throw new BusinessException("Formulário sem vagas configuradas");
         }
 
         if (formulario.getVagasContagem() <= 0) {
-
             formulario.setAtivo(Boolean.FALSE);
             formularioRepository.save(formulario);
-
-            throw new RuntimeException(
-                    "Vagas do formulário atingidas"
-            );
+            throw new BusinessException("Vagas do formulário atingidas");
         }
 
         MatriculaModel matricula =
@@ -169,10 +149,7 @@ public class FormularioMatriculaService {
 
         FormularioMatriculaModel formulario =
                 formularioRepository.findById(id)
-                .orElseThrow(() ->
-                        new RuntimeException(
-                                "Formulário não encontrado"
-                        ));
+                .orElseThrow(() -> new ResourceNotFoundException("Formulário não encontrado"));
 
         return verificarExpiracao(formulario);
     }
@@ -181,10 +158,7 @@ public class FormularioMatriculaService {
 
         FormularioMatriculaModel formulario =
                 formularioRepository.findById(id)
-                .orElseThrow(() ->
-                        new RuntimeException(
-                                "Formulário não encontrado"
-                        ));
+                .orElseThrow(() -> new ResourceNotFoundException("Formulário não encontrado"));
 
         formulario.setAtivo(Boolean.FALSE);
         formulario.setDeletedAt(LocalDateTime.now());
@@ -199,19 +173,13 @@ public class FormularioMatriculaService {
 
         FormularioMatriculaModel formulario =
                 formularioRepository.findById(id)
-                .orElseThrow(() ->
-                        new RuntimeException(
-                                "Formulário não encontrado"
-                        ));
+                .orElseThrow(() -> new ResourceNotFoundException("Formulário não encontrado"));
 
         if (request.getCursoId() != null) {
 
             CursoModel curso =
                     cursoRepository.findById(request.getCursoId())
-                    .orElseThrow(() ->
-                            new RuntimeException(
-                                    "Curso não encontrado"
-                            ));
+                    .orElseThrow(() -> new ResourceNotFoundException("Curso não encontrado"));
 
             formulario.setCurso(curso);
         }
@@ -227,9 +195,7 @@ public class FormularioMatriculaService {
         if (request.getVagas() != null) {
 
             if (request.getVagas() <= 0) {
-                throw new RuntimeException(
-                        "A quantidade de vagas do formulário deve ser maior que zero"
-                );
+                throw new ValidationException("A quantidade de vagas do formulário deve ser maior que zero");
             }
 
             formulario.setVagas(request.getVagas());
@@ -329,10 +295,7 @@ public class FormularioMatriculaService {
 
         FormularioMatriculaModel formulario =
                 formularioRepository.findByToken(token)
-                .orElseThrow(() ->
-                        new RuntimeException(
-                                "Formulário não encontrado"
-                        ));
+                .orElseThrow(() -> new ResourceNotFoundException("Formulário não encontrado"));
 
         return verificarExpiracao(formulario);
     }

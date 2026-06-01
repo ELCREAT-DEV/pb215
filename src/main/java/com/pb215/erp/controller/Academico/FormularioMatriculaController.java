@@ -2,6 +2,7 @@ package com.pb215.erp.controller.Academico;
 
 import java.util.List;
 
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -27,7 +28,7 @@ public class FormularioMatriculaController {
     private FormularioMatriculaService formularioService;
 
     @PostMapping("/gerar")
-    public FormularioMatriculaModel gerarFormulario(@RequestBody FormularioMatriculaRequest request) {
+    public FormularioMatriculaModel gerarFormulario(@Valid @RequestBody FormularioMatriculaRequest request) {
         return formularioService.gerarFormulario(request.getCursoId(), request.getExpiraEm(), request.getVagas());
     }
 
@@ -58,7 +59,7 @@ public class FormularioMatriculaController {
     }
 
     @PutMapping("/{id}")
-    public FormularioMatriculaModel atualizar(@PathVariable java.util.UUID id, @RequestBody FormularioMatriculaRequest request) {
+    public FormularioMatriculaModel atualizar(@PathVariable java.util.UUID id, @Valid @RequestBody FormularioMatriculaRequest request) {
         return formularioService.atualizarFormulario(id, request);  
     }
     

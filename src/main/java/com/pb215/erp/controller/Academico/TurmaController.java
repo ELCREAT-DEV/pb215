@@ -3,6 +3,7 @@ package com.pb215.erp.controller.Academico;
 
 import java.util.UUID;
 
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.pb215.erp.exception.ResourceNotFoundException;
 import com.pb215.erp.model.Academico.TurmaModel;
 import com.pb215.erp.repository.Academico.TurmaRepository;
 import com.pb215.erp.service.Academico.TurmaService;
@@ -28,7 +30,7 @@ public class TurmaController {
     private TurmaService turmaService;
 
     @PostMapping
-    public TurmaModel criar(@RequestBody TurmaModel turma) {
+    public TurmaModel criar(@Valid @RequestBody TurmaModel turma) {
         return turmaService.criarTurma(turma);
     }
     
@@ -39,11 +41,12 @@ public class TurmaController {
 
     @GetMapping("/{id}")
     public TurmaModel buscarPorId(@PathVariable UUID id) {
-        return turmaRepository.findById(id).orElseThrow();
+        return turmaRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Turma não encontrada"));
     }
     
     @PutMapping("/{id}")
-    public TurmaModel atualizar(@PathVariable UUID id, @RequestBody TurmaModel turmaReq) {
+    public TurmaModel atualizar(@PathVariable UUID id, @Valid @RequestBody TurmaModel turmaReq) {
         return turmaService.atualizarTurma(id, turmaReq);
     }
 

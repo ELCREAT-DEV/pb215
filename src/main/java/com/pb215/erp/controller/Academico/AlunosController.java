@@ -5,6 +5,7 @@ import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import jakarta.validation.Valid;
 
 import com.pb215.erp.dto.Academico.AlunoRequest;
 import com.pb215.erp.model.Academico.AlunoModel;
@@ -23,7 +24,7 @@ public class AlunosController {
     private AlunoMatriculaFacade facade;
 
     @PostMapping
-    public AlunoModel criar(@RequestBody AlunoRequest request) {
+    public AlunoModel criar(@Valid @RequestBody AlunoRequest request) {
         return facade.criarAlunoComMatricula(request);
     }
 
@@ -38,7 +39,7 @@ public class AlunosController {
     }
 
     @PutMapping("{id}")
-    public AlunoModel atualizar(@PathVariable UUID id, @RequestBody AlunoRequest request) {
+    public AlunoModel atualizar(@PathVariable UUID id, @Valid @RequestBody AlunoRequest request) {
         return service.atualizarAluno(id, request);
     }
 
